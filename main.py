@@ -12,7 +12,7 @@ window_height = screen_height // 2
 window = pygame.display.set_mode((window_width, window_height))
 pygame.display.set_caption('STEM Visual Helper')
 clock = pygame.time.Clock()
-textRenderer = pygame.font.Font('C:\\Windows\\Fonts\\msyh.ttc', 12)
+textRenderer = pygame.font.SysFont(('微软雅黑', 'pingfang'), 12)
 FPS = 60
 frame = 0
 
