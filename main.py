@@ -1,6 +1,6 @@
 import os
 import pygame
-from gui.widget.TextFieldWidget import TextFieldWidget
+from gui.widget.FloatFieldWidget import FloatFieldWidget
 
 os.environ['SDL_IME_SHOW_UI'] = '1'
 pygame.init()
@@ -16,7 +16,7 @@ textRenderer = pygame.font.SysFont(('微软雅黑', 'pingfang'), 12)
 FPS = 60
 frame = 0
 
-textFieldWidget = TextFieldWidget(textRenderer, 0, 0, 1000, 100, '')
+textFieldWidget = FloatFieldWidget(textRenderer, 0, 0, 1000, 100, '')
 
 running = True
 while running:
