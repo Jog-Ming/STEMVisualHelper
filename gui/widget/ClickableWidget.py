@@ -1,6 +1,7 @@
-from gui.Drawable import *
-from gui.Element import *
-from gui.widget.Widget import *
+from gui.Drawable import Drawable
+from gui.Element import Element
+from abc import ABC, abstractmethod
+from pygame import Surface
 
 
 class ClickableWidget(Drawable, Element, ABC):
@@ -13,6 +14,7 @@ class ClickableWidget(Drawable, Element, ABC):
         self.hovered = False
         self.visible = True
         self.focused = False
+        self.active = True
 
     def render(self, surface: Surface, mouse_x: int, mouse_y: int) -> None:
         if not self.visible:
@@ -24,6 +26,24 @@ class ClickableWidget(Drawable, Element, ABC):
     @abstractmethod
     def renderButton(self, surface: Surface, mouse_x: int, mouse_y: int) -> None:
         pass
+
+    def onClick(self, mouse_x: float, mouse_y: float) -> None:
+        pass
+
+    def mouseClicked(self, mouse_x: float, mouse_y: float, button: int) -> bool:
+        if not self.active or not self.visible:
+            return False
+        if self.isValidClickButton(button) and self.clicked(mouse_x, mouse_y):
+            self.onClick(mouse_x, mouse_y)
+            return True
+        return False
+
+    @staticmethod
+    def isValidClickButton(button: int) -> bool:
+        return button == 1
+
+    def clicked(self, mouse_x: float, mouse_y: float) -> bool:
+        return self.active and self.visible and self.getX() <= mouse_x <= self.getX() + self.width and self.getY() <= mouse_y <= self.getY() + self.height
 
     def setX(self, x: int) -> None:
         self.x = x

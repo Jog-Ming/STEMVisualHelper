@@ -1,4 +1,4 @@
-from gui.widget.TextFieldWidget import *
+from gui.widget.TextFieldWidget import TextFieldWidget
 
 
 class FloatFieldWidget(TextFieldWidget):

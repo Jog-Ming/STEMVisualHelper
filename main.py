@@ -1,6 +1,6 @@
 import os
 import pygame
-from gui.widget.FloatFieldWidget import FloatFieldWidget
+from gui.widget.ButtonWidget import ButtonWidget
 
 os.environ['SDL_IME_SHOW_UI'] = '1'
 pygame.init()
@@ -16,7 +16,7 @@ textRenderer = pygame.font.SysFont(('微软雅黑', 'pingfang'), 12)
 FPS = 60
 frame = 0
 
-textFieldWidget = FloatFieldWidget(textRenderer, 0, 0, 1000, 100, '')
+widget = ButtonWidget.builder('', lambda x: None).position(0, 0).build()
 
 running = True
 while running:
@@ -25,19 +25,19 @@ while running:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = event.pos
-            textFieldWidget.mouseClicked(mouse_x, mouse_y, event.button)
+            widget.mouseClicked(mouse_x, mouse_y, event.button)
         elif event.type == pygame.KEYDOWN:
-            textFieldWidget.keyPressed(event.key)
+            widget.keyPressed(event.key)
         elif event.type == pygame.TEXTINPUT:
-            textFieldWidget.charTyped(event.text)
+            widget.charTyped(event.text)
     if frame == FPS // 20:
         frame = 0
-        textFieldWidget.tick()
+        # widget.tick()
     else:
         frame += 1
     window.fill((255, 255, 255))
     mouse_x, mouse_y = pygame.mouse.get_pos()
-    textFieldWidget.render(window, mouse_x, mouse_y)
+    widget.render(window, mouse_x, mouse_y)
     pygame.display.flip()
     clock.tick(FPS)
 pygame.quit()
