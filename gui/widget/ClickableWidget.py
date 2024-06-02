@@ -2,6 +2,7 @@ from gui.Drawable import Drawable
 from gui.Element import Element
 from abc import ABC, abstractmethod
 from pygame import Surface
+from pygame.font import Font
 
 
 class ClickableWidget(Drawable, Element, ABC):
@@ -26,6 +27,10 @@ class ClickableWidget(Drawable, Element, ABC):
     @abstractmethod
     def renderButton(self, surface: Surface, mouse_x: int, mouse_y: int) -> None:
         pass
+
+    def drawScrollableText(self, surface: Surface, text_renderer: Font, x_margin: int, color: tuple[int, int, int]) -> None:
+        i = self.getX() + x_margin
+        surface.blit(text_renderer.render(self.getMessage(), True, color), (i, self.getY()))
 
     def onClick(self, mouse_x: float, mouse_y: float) -> None:
         pass
@@ -62,6 +67,9 @@ class ClickableWidget(Drawable, Element, ABC):
 
     def getHeight(self) -> int:
         return self.height
+
+    def getMessage(self) -> str:
+        return self.message
 
     def setFocused(self, focused: bool) -> None:
         self.focused = focused

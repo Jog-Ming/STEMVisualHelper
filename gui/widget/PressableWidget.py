@@ -1,5 +1,6 @@
 from pygame import Surface
 from pygame.draw import line
+from pygame.font import Font, SysFont
 from gui.widget.ClickableWidget import ClickableWidget
 from abc import ABC, abstractmethod
 
@@ -25,6 +26,14 @@ class PressableWidget(ClickableWidget, ABC):
         line(surface, (0, 0, 0),
              (self.getX(), self.getY() + self.getHeight()),
              (self.getX(), self.getY()))
+        if self.active:
+            i = (0x00, 0x00, 0x00)
+        else:
+            i = (0xA0, 0xA0, 0xA0)
+        self.drawMessage(surface, SysFont(('微软雅黑', 'pingfang'), 12), i)
+
+    def drawMessage(self, surface: Surface, text_renderer: Font, color: tuple[int, int, int]):
+        self.drawScrollableText(surface, text_renderer, 2, color)
 
     def onClick(self, mouse_x: float, mouse_y: float):
         self.onPress()

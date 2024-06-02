@@ -16,7 +16,7 @@ textRenderer = pygame.font.SysFont(('微软雅黑', 'pingfang'), 12)
 FPS = 60
 frame = 0
 
-widget = ButtonWidget.builder('', lambda x: None).position(0, 0).build()
+widget = ButtonWidget.builder('Hello', lambda x: None).position(0, 0).build()
 
 running = True
 while running:
