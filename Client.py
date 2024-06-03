@@ -2,10 +2,10 @@ from typing import Optional
 import pygame
 from gui.screen.Screen import Screen
 from gui.screen.TitleScreen import TitleScreen
-pygame.init()
 
 
 class Client:
+    pygame.init()
     textRenderer = pygame.font.SysFont(('微软雅黑', 'pingfang'), 24)
 
     def __init__(self):
