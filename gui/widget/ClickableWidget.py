@@ -5,6 +5,7 @@ from gui.widget.Widget import Widget
 from abc import ABC, abstractmethod
 from pygame import Surface
 from pygame.font import Font
+from typing import Tuple
 
 
 class ClickableWidget(DrawableHelper, Drawable, Element, Widget, ABC):
@@ -30,7 +31,7 @@ class ClickableWidget(DrawableHelper, Drawable, Element, Widget, ABC):
     def renderButton(self, surface: Surface, mouse_x: int, mouse_y: int) -> None:
         pass
 
-    def drawScrollableText(self, surface: Surface, text_renderer: Font, x_margin: int, color: tuple[int, int, int]) -> None:
+    def drawScrollableText(self, surface: Surface, text_renderer: Font, x_margin: int, color: Tuple[int, int, int]) -> None:
         i = self.getX() + x_margin
         ClickableWidget.drawText(surface, text_renderer, self.getMessage(), i, self.getY(), color)
 
