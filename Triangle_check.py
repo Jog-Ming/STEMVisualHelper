@@ -191,25 +191,6 @@ def tri_solve(sides: dict, angles: dict) -> list:
                     alter_s3 = s1 * sin(radians(alter_a3)) / sin(radians(a1))
 
                     return [[s1, s2, s3, a1, a2, a3], [s1, s2, alter_s3, a1, alter_a2, alter_a3]]
-
-                    '''
-                    a2 = (degrees(asin(delta)), 180 - degrees(asin(delta)))
-
-                    a3 = (180 - a1 - a2[0], 180 - a1 - a2[1])
-
-                    s3 = (s1 * sin(radians(a3[0])) / sin(radians(a1)), s1 * sin(radians(a3[1])) / sin(radians(a1)))
-
-                    return [[s1, s2[0], s3[0], a1, a2, a3[0]], [s1, s2[1], s3[1], a1, a2, a3[1]]]
-                    
-                    print(f"{s3n} = {round(s3[0],4):.3f}, ∠{a2n} = {round(a2[0],4):.3f}°, ∠{a3n} = {round(a3[0],4):.3f}°")
-
-                    print(f"Area = {round(area(s1, s2, s3[0]), 4):.3f}")
-
-                    print(f"{s3n} = {round(s3[1],4):.3f}, ∠{a2n} = {round(a2[1],4):.3f}°, ∠{a3n} = {round(a3[1],4):.3f}°")
-
-                    print(f"Area = {round(area(s1, s2, s3[1]), 4):.3f}")
-
-                    '''
             else:
 
                 return[-1]
@@ -262,6 +243,57 @@ def tri_solve(sides: dict, angles: dict) -> list:
         else:
 
             return [-1]
+
+
+def tri_n(sides: dict, angles: dict, num_data: int) -> list:
+    ZERO = 0.1
+    angles_name = ["A", "B", "C"]
+    print(sides)
+    print(angles)
+
+    v = [0, 0, 0, 0, 0, 0]
+    num_data -= 3
+    for i in range(3):
+        print(angles.items())
+        if angles_name[i] in angles.keys():
+            print("yes")
+            v[i + 3] = angles[angles_name[i]]
+            del angles[angles_name[i]]
+            num_data -= 1
+            if num_data == 0:
+                break
+
+    tri = tri_solve(sides, angles)
+    if tri[0] == -1:
+        return [-1]
+    elif len(tri) == 2:
+        for i in range(2):
+            ok = True
+            for j in range(6):
+                if v[j] == 0:
+                    continue
+                else:
+                    if abs(v[j] - tri[i][j]) > ZERO:
+                        ok = False
+            if ok:
+                return tri[i]
+        return [-1]
+    else:
+        ok = True
+        print(v)
+        print(tri)
+        for j in range(6):
+            if v[j] == 0:
+                continue
+            else:
+                if abs(v[j] - tri[j]) > ZERO:
+                    ok = False
+        if ok:
+            return tri
+        return [-1]
+
+
+
 
 
 
