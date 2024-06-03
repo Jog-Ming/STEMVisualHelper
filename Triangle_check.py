@@ -3,6 +3,7 @@ from math import radians, degrees, sin, asin, cos, acos, sqrt
 ZERO = 1e-5
 inf = 1e10
 
+
 def area(a: float, b: float, c: float) -> float:
 
     p = (a + b + c) / 2
@@ -41,6 +42,7 @@ def tri_check(s: list, a: list) -> bool:
 
         return False
 
+
 def tri_solve(sides: dict, angles: dict) -> list:
     
     ZERO = 1e-5
@@ -49,8 +51,6 @@ def tri_solve(sides: dict, angles: dict) -> list:
     side_names = ('a', 'b', 'c')
 
     angle_names = tuple(i.upper() for i in side_names)
-
-
 
     if any(i <= ZERO for i in sides.values()) or any(i <= ZERO or i >= 180 - ZERO for i in angles.values()):
 
@@ -119,7 +119,6 @@ def tri_solve(sides: dict, angles: dict) -> list:
         
             # print(f"{s2n} = {round(s2,4):.3f}, {s3n} = {round(s3,4):.3f}, ∠{tn} = {round(t,4):.3f}°")
 
-            
     elif len(sides) == 2:
 
         # SSA or SAS
@@ -148,7 +147,6 @@ def tri_solve(sides: dict, angles: dict) -> list:
 
             # s1, s2, a1
 
-            
             delta = s2 * sin(radians(a1)) / s1
 
             if (a1 == 90 and s1 == s2):
@@ -239,7 +237,6 @@ def tri_solve(sides: dict, angles: dict) -> list:
             return [s1, s2, s3, a1, a2, a3]
             #print(f"∠{a1n} = {round(a1,4):.3f}°, ∠{a2n} = {round(a2,4):.3f}°, ∠{a3n} = {round(a3,4):.3f}°")
 
-            
         else:
 
             return [-1]
@@ -248,31 +245,30 @@ def tri_solve(sides: dict, angles: dict) -> list:
 def tri_n(sides: dict, angles: dict, num_data: int) -> list:
     ZERO = 0.1
     angles_name = ["A", "B", "C"]
-    print(sides)
-    print(angles)
-
     v = [0, 0, 0, 0, 0, 0]
     num_data -= 3
-    for i in range(3):
-        print(angles.items())
+
+    if num_data == 0:
+        tri = tri_solve(sides, angles)
+        return tri
+
+    for i in range(2, -1, -1):
+        if num_data == 0:
+            break
         if angles_name[i] in angles.keys():
-            print("yes")
             v[i + 3] = angles[angles_name[i]]
             del angles[angles_name[i]]
             num_data -= 1
-            if num_data == 0:
-                break
 
     tri = tri_solve(sides, angles)
+
     if tri[0] == -1:
         return [-1]
     elif len(tri) == 2:
         for i in range(2):
-            ok = True
+            ok = False
             for j in range(6):
-                if v[j] == 0:
-                    continue
-                else:
+                if v[j] != 0:
                     if abs(v[j] - tri[i][j]) > ZERO:
                         ok = False
             if ok:
@@ -282,48 +278,11 @@ def tri_n(sides: dict, angles: dict, num_data: int) -> list:
         ok = True
         print(v)
         print(tri)
-        for j in range(6):
-            if v[j] == 0:
-                continue
-            else:
-                if abs(v[j] - tri[j]) > ZERO:
+        for i in range(6):
+            if v[i] != 0:
+                if abs(v[i] - tri[i]) > ZERO:
                     ok = False
         if ok:
             return tri
         return [-1]
-
-
-
-
-
-
-
-
-s = {'a': 10, 'b': 6}
-a = {'A': 50}
-
-
-
-
-triangle = [s, a]
-
-
-if (len(s) + len(a)) == 6:
-    print(tri_check(triangle[0].values(), triangle[1].values()))
-
-    
-    
-
-
-
-
-    
-
-
-
-
-
-
-
-
 
