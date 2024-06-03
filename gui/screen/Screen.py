@@ -13,7 +13,7 @@ class Screen(AbstractParentElement, Drawable, ABC):
         self.title = title
         self.__children: List[Element] = []
         self.drawables: List[Drawable] = []
-        self.textRenderer = SysFont(('微软雅黑', 'pingfang'), 12)
+        self.textRenderer = None
         self.width = None
         self.height = None
         self.screenInitialized = False
@@ -45,6 +45,7 @@ class Screen(AbstractParentElement, Drawable, ABC):
 
     def initWithSize(self, client, width: int, height: int):
         self.client = client
+        self.textRenderer = client.textRenderer
         self.width = width
         self.height = height
         if not self.screenInitialized:

@@ -2,11 +2,13 @@ from typing import Optional
 import pygame
 from gui.screen.Screen import Screen
 from gui.screen.TitleScreen import TitleScreen
+pygame.init()
 
 
 class Client:
+    textRenderer = pygame.font.SysFont(('微软雅黑', 'pingfang'), 24)
+
     def __init__(self):
-        pygame.init()
         info = pygame.display.Info()
         screen_width = info.current_w
         screen_height = info.current_h
@@ -15,7 +17,6 @@ class Client:
         self.window = pygame.display.set_mode((window_width, window_height))
         pygame.display.set_caption('STEM Visual Helper')
         self.clock = pygame.time.Clock()
-        self.textRenderer = pygame.font.SysFont(('微软雅黑', 'pingfang'), 12)
         self.currentFPS = 60
         self.running = True
         self.currentScreen = None
@@ -60,6 +61,7 @@ class Client:
 
 if __name__ == '__main__':
     import os
+
     os.environ['SDL_IME_SHOW_UI'] = '1'
     client = Client()
     client.run()
