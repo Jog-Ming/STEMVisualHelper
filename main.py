@@ -48,6 +48,7 @@ def print_area(v, ori):
 os.environ['SDL_IME_SHOW_UI'] = '1'
 pygame.init()
 info = pygame.display.Info()
+
 screen_width = info.current_w
 screen_height = info.current_h
 window_width = screen_width // 2
