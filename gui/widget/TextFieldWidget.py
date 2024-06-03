@@ -1,7 +1,7 @@
-from gui.widget.ClickableWidget import ClickableWidget
-from pygame.font import Font
-from pygame.draw import line
 from pygame import Surface, K_LEFT, K_RIGHT, K_BACKSPACE, K_DELETE
+from pygame.font import Font
+
+from gui.widget.ClickableWidget import ClickableWidget
 
 
 class TextFieldWidget(ClickableWidget):

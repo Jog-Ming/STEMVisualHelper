@@ -14,10 +14,34 @@ class PressableWidget(ClickableWidget, ABC):
         pass
 
     def renderButton(self, surface: Surface, mouse_x: int, mouse_y: int) -> None:
-        PressableWidget.drawHorizontalLine(surface, self.getX(), self.getX() + self.getWidth(), self.getY(), (0, 0, 0))
-        PressableWidget.drawHorizontalLine(surface, self.getX(), self.getX() + self.getWidth(), self.getY() + self.getHeight(), (0, 0, 0))
-        PressableWidget.drawVerticalLine(surface, self.getX(), self.getY(), self.getY() + self.getHeight(), (0, 0, 0))
-        PressableWidget.drawVerticalLine(surface, self.getX() + self.getWidth(), self.getY(), self.getY() + self.getHeight(), (0, 0, 0))
+        PressableWidget.drawHorizontalLine(
+            surface,
+            self.getX(),
+            self.getX() + self.getWidth(),
+            self.getY(),
+            (0, 0, 0)
+        )
+        PressableWidget.drawHorizontalLine(
+            surface,
+            self.getX(),
+            self.getX() + self.getWidth(),
+            self.getY() + self.getHeight(),
+            (0, 0, 0)
+        )
+        PressableWidget.drawVerticalLine(
+            surface,
+            self.getX(),
+            self.getY(),
+            self.getY() + self.getHeight(),
+            (0, 0, 0)
+        )
+        PressableWidget.drawVerticalLine(
+            surface,
+            self.getX() + self.getWidth(),
+            self.getY(),
+            self.getY() + self.getHeight(),
+            (0, 0, 0)
+        )
         if self.active:
             i = (0x00, 0x00, 0x00)
         else:

@@ -43,5 +43,4 @@ class ButtonWidget(PressableWidget):
         return ButtonWidget.Builder(message, on_press)
 
     def onPress(self) -> None:
-        print('Pressed')
         self.on_press(self)
