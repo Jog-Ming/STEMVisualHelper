@@ -6,7 +6,7 @@ from math import sin, cos, radians
 from gui.widget.FloatFieldWidget import FloatFieldWidget
 from gui.widget.ButtonWidget import ButtonWidget
 from gui.DrawableHelper import DrawableHelper
-from Triangle_check import tri_check, tri_solve, area, tri_n
+from Triangle_check import tri_type, area, tri_n
 
 
 def draw_triangle(v, ori, p, window):
@@ -44,9 +44,12 @@ def sort_triangle(v):
 
 def print_area(v, ori, window, textRenderer):
     DrawableHelper.drawText(window, textRenderer, text=f"Area: {round(area(v[0], v[1], v[2]), 3)}", x=ori[0] + 40,
+                            y=ori[1] + 60, color=(0, 0, 0))
+
+
+def print_type(v, ori, window, textRenderer):
+    DrawableHelper.drawText(window, textRenderer, text= tri_type(v), x=ori[0],
                             y=ori[1] + 30, color=(0, 0, 0))
-
-
 
 
 
@@ -83,10 +86,15 @@ class TriangleScreen(Screen):
         DrawableHelper.drawText(surface, self.textRenderer, text="Triangle Solver", x=int(self.width / 2) - 75, y=0,
                                 color=(0, 0, 0))
         # draw the number of data inputted and triangles possible
-        DrawableHelper.drawText(surface, self.textRenderer, text=f"There are {self.non_ZERO} datas inputted", x=200, y=370,
-                                color=(0, 0, 0))
+        if self.is_tri:
+            DrawableHelper.drawText(surface, self.textRenderer, text=f"There are {self.non_ZERO} datas inputted", x=200, y=370,
+                                    color=(0, 0, 0))
+        else:
+            DrawableHelper.drawText(surface, self.textRenderer, text=f"There are {self.non_ZERO} datas inputted", x=200,
+                                    y=370,
+                                    color=(255, 0, 0))
 
-        if (self.is_tri):
+        if self.is_tri:
             DrawableHelper.drawText(surface, self.textRenderer, text=f"There is {self.is_tri} triangles formed", x=200, y=410,
                                 color=(0, 0, 0))
 
@@ -140,22 +148,29 @@ class TriangleScreen(Screen):
             self.v = sort_triangle(self.v)
 
             ori = (300, 250)
+
             draw_triangle(self.v, ori, p, surface)
+            print_type(self.v, ori, surface, self.textRenderer)
             print_area(self.v, ori, surface, self.textRenderer)
         if self.is_tri == float("inf"):  # if there is only 1 possible triangle or inf triangles
             self.v = sort_triangle(self.v)
 
             ori = (300, 250)
+
             draw_triangle(self.v, ori, p, surface)
+            print_type(self.v, ori, surface, self.textRenderer)
         elif self.is_tri == 2:  # if there is 2 possible triangles
             self.v1 = sort_triangle(self.v1)
             self.v2 = sort_triangle(self.v2)
 
             ori1 = (170, 250)
             ori2 = (470, 250)
+
             draw_triangle(self.v1, ori1, p, surface)
+            print_type(self.v1, ori1, surface, self.textRenderer)
             print_area(self.v1, ori1, surface, self.textRenderer)
             draw_triangle(self.v2, ori2, p, surface)
+            print_type(self.v2, ori2, surface, self.textRenderer)
             print_area(self.v2, ori2, surface, self.textRenderer)
         else:  # If there is no triangle
             pass

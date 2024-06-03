@@ -10,6 +10,34 @@ def area(a: float, b: float, c: float) -> float:
 
     return sqrt(p * (p - a) * (p - b) * (p - c))
 
+def tri_type(v):
+    ZERO = 1e-2
+    s1 = v[0]
+    s2 = v[1]
+    s3 = v[2]
+    a1 = v[3]
+    a2 = v[4]
+    a3 = v[5]
+
+    d12 = abs(s1 - s2)
+    d23 = abs(s2 - s3)
+    d13 = abs(s1 - s2)
+    t = ""
+    if d12 < ZERO and d23 < ZERO and d13 < ZERO:
+        t += "equilateral "
+    elif d12 < ZERO and d23 < ZERO or d12 < ZERO and d13 < ZERO or d23 < ZERO and d12 < ZERO:
+        t += "isosceles "
+    else:
+        t += "scalene "
+    if a1 > 90 or a2 > 90 or a3 > 90:
+        t = "obtuse " + t
+    elif abs(a1 - 90) < ZERO or abs(a1 - 90) < ZERO or abs(a1 - 90) < ZERO:
+        t = "right " + t
+    elif t != "equilateral ":
+        t = "acute " + t
+    t += "triangle"
+    return t
+
 
 def tri_check(s: list, a: list) -> bool:
     # Given the three sides and angles, check if the triangle exists
