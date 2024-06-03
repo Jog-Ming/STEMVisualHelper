@@ -1,10 +1,10 @@
 import os
 import pygame
 from math import sin, cos, radians
-from gui.widget.ButtonWidget import ButtonWidget
 from gui.widget.FloatFieldWidget import FloatFieldWidget
 from gui.DrawableHelper import DrawableHelper
 from Triangle_check import tri_check, tri_solve, area, tri_n
+
 
 # maybe put the two functions somewhere else
 def draw_triangle(v, ori, p):
@@ -39,6 +39,7 @@ def sort_triangle(v):
     v = v_s + v_a
     return v
 
+
 def print_area(v, ori):
     DrawableHelper.drawText(window, textRenderer, text=f"A: {round(area(v[0], v[1], v[2]), 3)}", x=ori[0] + 50,
                             y=ori[1] + 30, color=(0, 0, 0))
@@ -58,20 +59,17 @@ textRenderer = pygame.font.SysFont(('微软雅黑', 'pingfang'), 12)
 FPS = 60
 frame = 0
 
-# widget = ButtonWidget.builder('', lambda x: None).position(200, 200).build()
-
-
 # receiving data ---------------------- start
 is_tri = 0 # the number of triangles that can be formed
 non_ZERO = 0 # the number of data given
 
 # the following list consists of 6 data: 3 sides and 3 angles
 # v[i] and v[i + 3] are corresponding sides and angles
-triangles = [] # the list of the float field widget
-v = [0, 0, 0, 0, 0, 0] # the list of the data given, AND the final list of the final 6 values of a triangle
-v1 = [0, 0, 0, 0, 0, 0] # the list of the final 6 values of the two triangles
+triangles = []  # the list of the float field widget
+v = [0, 0, 0, 0, 0, 0]  # the list of the data given, AND the final list of the final 6 values of a triangle
+v1 = [0, 0, 0, 0, 0, 0]  # the list of the final 6 values of the two triangles
 v2 = [0, 0, 0, 0, 0, 0]
-names = ['a', 'b', 'c', 'A', 'B', 'C'] # the names of the side and angle
+names = ['a', 'b', 'c', 'A', 'B', 'C']  # the names of the side and angle
 
 for i in range(6):
     triangles.append(FloatFieldWidget(textRenderer, x=40, y=30 + i * 20, width=100, height=20, text="0"))
@@ -85,23 +83,23 @@ while running:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = event.pos
-            # widget.mouseClicked(mouse_x, mouse_y, event.button)
+
             for i in range(6):
                 triangles[i].mouseClicked(mouse_x, mouse_y, event.button)
 
         elif event.type == pygame.KEYDOWN:
-            # widget.keyPressed(event.key)
+
             for i in range(6):
                 triangles[i].keyPressed(event.key)
 
         elif event.type == pygame.TEXTINPUT:
-            # widget.charTyped(event.text)
+
             for i in range(6):
                 triangles[i].charTyped(event.text)
 
     if frame == FPS // 20:
         frame = 0
-        # widget.tick()
+
         for i in range(6):
             triangles[i].tick()
 
@@ -109,7 +107,6 @@ while running:
         frame += 1
     window.fill((255, 255, 255))
     mouse_x, mouse_y = pygame.mouse.get_pos()
-    # widget.render(window, mouse_x, mouse_y)
 
     # actual coding of the triangle solver
     # ------------------------------------------- start
@@ -124,33 +121,29 @@ while running:
     for i in range(6):
         DrawableHelper.drawText(window, textRenderer, f'{names[i]}: ', x=20, y=30+20 * i, color=(0, 0, 0))
 
-    # receive data for sides and angles
+    # receive data for sides and angles AND find how data points are given
+    non_ZERO = 0
     for i in range(6):
         triangles[i].render(window, mouse_x, mouse_y)
     for i in range(6):
         if triangles[i].text:
             v[i] = float(triangles[i].text)
+            non_ZERO += 1
         else:
             v[i] = 0
 
-    # find how many datas are given
-    non_ZERO = 0
-    for i in range(6):
-        if v[i]:
-            non_ZERO += 1
-
     # according to the number of data, find the final values of thr triangle(s)
+    sides = {}
+    angles = {}
+    for i in range(3):
+        if v[i]:
+            sides[names[i]] = v[i]
+    for i in range(3, 6):
+        if v[i]:
+            angles[names[i]] = v[i]
 
-    if non_ZERO == 3:  # if there is only 3 data, solve the triangle.
-        sides = {}
-        angles = {}
-        for i in range(3):
-            if v[i]:
-                sides[names[i]] = v[i]
-        for i in range(3, 6):
-            if v[i]:
-                angles[names[i]] = v[i]
-        values = tri_solve(sides, angles)
+    if non_ZERO >= 3:  # if there is only 3 data, solve the triangle.
+        values = tri_n(sides, angles, non_ZERO)
 
         if values[0] == -1:  # There is no triangle
             is_tri = 0
@@ -164,23 +157,6 @@ while running:
         else:  # There is one triangle
             is_tri = 1
             v = values
-    elif non_ZERO == 4 or non_ZERO == 5:  # if there is 4 data, solve the triangle with the first three data, and check
-        sides = {}
-        angles = {}
-        for i in range(3):
-            if v[i]:
-                sides[names[i]] = v[i]
-        for i in range(3, 6):
-            if v[i]:
-                angles[names[i]] = v[i]
-        values = tri_n(sides, angles, non_ZERO)
-        if values[0] == -1:
-            is_tri = 0
-        else:
-            is_tri = 1
-            v = values
-    elif non_ZERO == 6:  # if there is 6 data, make sure the triangle is true.
-        is_tri = int(tri_check(v[:3], v[3:]))
     else:  # There is not enough of information to even decide a triangle
         is_tri = 0
 
