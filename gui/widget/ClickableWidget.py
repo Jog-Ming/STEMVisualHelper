@@ -1,11 +1,13 @@
+from gui.DrawableHelper import DrawableHelper
 from gui.Drawable import Drawable
 from gui.Element import Element
+from gui.widget.Widget import Widget
 from abc import ABC, abstractmethod
 from pygame import Surface
 from pygame.font import Font
 
 
-class ClickableWidget(Drawable, Element, ABC):
+class ClickableWidget(DrawableHelper, Drawable, Element, Widget, ABC):
     def __init__(self, x: int, y: int, width: int, height: int, message: str):
         self.x = x
         self.y = y
@@ -30,7 +32,7 @@ class ClickableWidget(Drawable, Element, ABC):
 
     def drawScrollableText(self, surface: Surface, text_renderer: Font, x_margin: int, color: tuple[int, int, int]) -> None:
         i = self.getX() + x_margin
-        surface.blit(text_renderer.render(self.getMessage(), True, color), (i, self.getY()))
+        ClickableWidget.drawText(surface, text_renderer, self.getMessage(), i, self.getY(), color)
 
     def onClick(self, mouse_x: float, mouse_y: float) -> None:
         pass

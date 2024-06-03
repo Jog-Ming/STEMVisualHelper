@@ -53,10 +53,10 @@ class TextFieldWidget(ClickableWidget):
     def renderButton(self, surface: Surface, mouse_x: int, mouse_y: int) -> None:
         if not self.isVisible():
             return
-        surface.blit(self.textRenderer.render(self.text, True, (0, 0, 0)), (self.x, self.y))
+        TextFieldWidget.drawText(surface, self.textRenderer, self.text, self.x, self.y, (0, 0, 0))
         if self.isFocused() and self.focusedTicks // 6 % 2 == 0:
             x = self.x + self.textRenderer.render(self.text[:self.selectionStart], True, (0, 0, 0)).get_width()
-            line(surface, (0, 0, 0), (x, self.y), (x, self.y + self.textRenderer.get_height()))
+            TextFieldWidget.drawVerticalLine(surface, x, self.y, self.y + self.textRenderer.get_height(), (0, 0, 0))
 
     def tick(self) -> None:
         self.focusedTicks += 1

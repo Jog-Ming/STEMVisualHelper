@@ -1,5 +1,4 @@
 from pygame import Surface
-from pygame.draw import line
 from pygame.font import Font, SysFont
 from gui.widget.ClickableWidget import ClickableWidget
 from abc import ABC, abstractmethod
@@ -14,18 +13,10 @@ class PressableWidget(ClickableWidget, ABC):
         pass
 
     def renderButton(self, surface: Surface, mouse_x: int, mouse_y: int) -> None:
-        line(surface, (0, 0, 0),
-             (self.getX(), self.getY()),
-             (self.getX() + self.getWidth(), self.getY()))
-        line(surface, (0, 0, 0),
-             (self.getX() + self.getWidth(), self.getY()),
-             (self.getX() + self.getWidth(), self.getY() + self.getHeight()))
-        line(surface, (0, 0, 0),
-             (self.getX() + self.getWidth(), self.getY() + self.getHeight()),
-             (self.getX(), self.getY() + self.getHeight()))
-        line(surface, (0, 0, 0),
-             (self.getX(), self.getY() + self.getHeight()),
-             (self.getX(), self.getY()))
+        PressableWidget.drawHorizontalLine(surface, self.getX(), self.getX() + self.getWidth(), self.getY(), (0, 0, 0))
+        PressableWidget.drawHorizontalLine(surface, self.getX(), self.getX() + self.getWidth(), self.getY() + self.getHeight(), (0, 0, 0))
+        PressableWidget.drawVerticalLine(surface, self.getX(), self.getY(), self.getY() + self.getHeight(), (0, 0, 0))
+        PressableWidget.drawVerticalLine(surface, self.getX() + self.getWidth(), self.getY(), self.getY() + self.getHeight(), (0, 0, 0))
         if self.active:
             i = (0x00, 0x00, 0x00)
         else:
