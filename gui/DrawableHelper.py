@@ -7,7 +7,7 @@ from pygame.font import Font
 class DrawableHelper(ABC):
     @staticmethod
     def fill(surface: Surface, x1: int, y1: int, x2: int, y2: int, color: tuple[int, int, int]) -> None:
-        rect(surface, color, ((x1, y1), (x2, y2)))
+        rect(surface, color, ((x1, y1), (x2 - x1, y2 - y1)))
 
     @staticmethod
     def drawHorizontalLine(surface: Surface, x1: int, x2: int, y: int, color: tuple[int, int, int]) -> None:
