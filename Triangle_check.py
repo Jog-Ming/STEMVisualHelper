@@ -276,8 +276,8 @@ def tri_n(sides: dict, angles: dict, num_data: int) -> list:
         return [-1]
     else:
         ok = True
-        print(v)
-        print(tri)
+        # print(v)
+        # print(tri)
         for i in range(6):
             if v[i] != 0:
                 if abs(v[i] - tri[i]) > ZERO:

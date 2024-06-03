@@ -136,12 +136,17 @@ class TriangleScreen(Screen):
             self.is_tri = 0
 
         p = 200
-        if self.is_tri == 1 or self.is_tri == float("inf"):  # if there is only 1 possible triangle or inf triangles
+        if self.is_tri == 1:  # if there is only 1 possible triangle or inf triangles
             self.v = sort_triangle(self.v)
 
             ori = (300, 250)
             draw_triangle(self.v, ori, p, surface)
             print_area(self.v, ori, surface, self.textRenderer)
+        if self.is_tri == float("inf"):  # if there is only 1 possible triangle or inf triangles
+            self.v = sort_triangle(self.v)
+
+            ori = (300, 250)
+            draw_triangle(self.v, ori, p, surface)
         elif self.is_tri == 2:  # if there is 2 possible triangles
             self.v1 = sort_triangle(self.v1)
             self.v2 = sort_triangle(self.v2)
