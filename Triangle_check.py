@@ -25,7 +25,10 @@ def tri_check(s: list, a: list) -> bool:
     a3 = a[2]
     
     # calculate the angles using the sides
-    
+    if (s2 ** 2 + s3 ** 2 - s1 ** 2) / 2 / s2 / s3 > 1 or (s2 ** 2 + s3 ** 2 - s1 ** 2) / 2 / s2 / s3 < -1:
+        return False
+    if (s1 ** 2 + s3 ** 2 - s2 ** 2) / 2 / s1 / s3 > 1 or (s1 ** 2 + s3 ** 2 - s2 ** 2) / 2 / s1 / s3 < -1:
+        return False
     a1_cal = degrees(acos((s2 ** 2 + s3 ** 2 - s1 ** 2) / 2 / s2 / s3))
     a2_cal = degrees(acos((s1 ** 2 + s3 ** 2 - s2 ** 2) / 2 / s1 / s3))
     a3_cal = 180 - a1 - a2
@@ -55,10 +58,14 @@ def tri_solve(sides: dict, angles: dict) -> list:
     if len(sides) == 0:
 
         # AAA
-
+        a1 = angles['A']
+        a2 = angles['B']
+        a3 = angles['C']
         if abs(sum(angles.values()) - 180) < ZERO:
-
-            return [inf]
+            s1 = 1
+            s2 = sin(radians(a2)) / sin(radians(a1))
+            s3 = sin(radians(a3)) / sin(radians(a1))
+            return [inf, [s1, s2, s3, a1, a2, a3]]
         else:
 
             return [-1]
