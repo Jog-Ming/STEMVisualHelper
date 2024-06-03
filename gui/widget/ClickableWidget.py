@@ -31,7 +31,13 @@ class ClickableWidget(DrawableHelper, Drawable, Element, Widget, ABC):
     def renderButton(self, surface: Surface, mouse_x: int, mouse_y: int) -> None:
         pass
 
-    def drawScrollableText(self, surface: Surface, text_renderer: Font, x_margin: int, color: Tuple[int, int, int]) -> None:
+    def drawScrollableText(
+            self,
+            surface: Surface,
+            text_renderer: Font,
+            x_margin: int,
+            color: Tuple[int, int, int]
+    ) -> None:
         i = self.getX() + x_margin
         ClickableWidget.drawText(surface, text_renderer, self.getMessage(), i, self.getY(), color)
 
@@ -51,7 +57,12 @@ class ClickableWidget(DrawableHelper, Drawable, Element, Widget, ABC):
         return button == 1
 
     def clicked(self, mouse_x: float, mouse_y: float) -> bool:
-        return self.active and self.visible and self.getX() <= mouse_x <= self.getX() + self.width and self.getY() <= mouse_y <= self.getY() + self.height
+        return (
+            self.active
+            and self.visible
+            and self.getX() <= mouse_x <= self.getX() + self.width
+            and self.getY() <= mouse_y <= self.getY() + self.height
+        )
 
     def setX(self, x: int) -> None:
         self.x = x
