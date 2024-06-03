@@ -1,4 +1,6 @@
 from gui.screen.Screen import Screen
+from gui.screen.TriangleScreen import TriangleScreen
+from gui.screen.PhysicsScreen import PhysicsScreen
 from gui.widget.ButtonWidget import ButtonWidget
 
 
@@ -9,13 +11,13 @@ class TitleScreen(Screen):
     def init(self) -> None:
         self.addDrawableChild(
             ButtonWidget
-            .builder('Triangle', lambda button: None)
+            .builder('Triangle', lambda button: self.client.setScreen(TriangleScreen(self)))
             .dimensions(self.width / 2 - 200, self.height / 4 + 48, 400, 40)
             .build()
         )
         self.addDrawableChild(
             ButtonWidget
-            .builder('Physics', lambda button: None)
+            .builder('Physics', lambda button: self.client.setScreen(PhysicsScreen(self)))
             .dimensions(self.width / 2 - 200, self.height / 4 + 96, 400, 40)
             .build()
         )
