@@ -7,25 +7,29 @@ from math import atan, sin, cos
 
 
 class PhysicsScreen(Screen):
+
     class SoftBodyPoint:
-        def __init__(self, x: float, y: float):
+        def __init__(self, mass: float, x: float, y: float):
+            self.mass = mass
             self.x = x
             self.y = y
             self.neighbors = []
             self.distances = []
             self.velocity_x = 0.0
             self.velocity_y = 0.0
+            from Client import Client
+            self.FPS = Client.FPS
 
         def add_neighbor(self, neighbor):
             self.neighbors.append(neighbor)
             self.distances.append(((self.x - neighbor.x) ** 2 + (self.y - neighbor.y) ** 2) ** 0.5)
 
-        def tick(self):
+        def update_velocity(self):
             force_x = 0
-            force_y = 10
+            force_y = 0
             for i, neighbor in enumerate(self.neighbors):
                 dx = ((self.x - neighbor.x) ** 2 + (self.y - neighbor.y) ** 2) ** 0.5 - self.distances[i]
-                force = 10 * dx
+                force = 1000 * dx
                 if self.x - neighbor.x > 0:
                     force = -force
                 if self.x == neighbor.x:
@@ -34,10 +38,13 @@ class PhysicsScreen(Screen):
                 theta = atan((self.y - neighbor.y) / (self.x - neighbor.x))
                 force_x += force * cos(theta)
                 force_y += force * sin(theta)
-            self.velocity_x += force_x / 60
-            self.velocity_y += force_y / 60
-            self.x += self.velocity_x / 60
-            self.y += self.velocity_y / 60
+            self.velocity_x += force_x / self.FPS / self.mass
+            self.velocity_y += force_y / self.FPS / self.mass
+            self.velocity_y += 20 / self.FPS
+
+        def update_position(self):
+            self.x += self.velocity_x / self.FPS
+            self.y += self.velocity_y / self.FPS
 
         def __repr__(self):
             return str((self.x, self.y))
@@ -70,24 +77,31 @@ class PhysicsScreen(Screen):
         return intersections % 2 == 1
 
     @staticmethod
-    def closest_point_on_line(point: Tuple[float, float], line:Tuple[Tuple[int, int], Tuple[int, int]]) -> Tuple[float, float]:
-        p1, p2 = line
-        x1, y1 = p1
-        x2, y2 = p2
+    def closest_point_on_line(
+            point: Tuple[float, float],
+            line: Tuple[Tuple[int, int], Tuple[int, int]]
+    ) -> Tuple[float, float]:
+        point_1, point_2 = line
+        x1, y1 = point_1
+        x2, y2 = point_2
         xt, yt = point
         if y2 < y1:
             x1, x2 = x2, x1
             y1, y2 = y2, y1
-        if x1 != x2:
+        elif y1 == y2:
+            if x2 > x1:
+                x = min(max(xt, x1), x2)
+            else:
+                x = min(max(xt, x2), x1)
+            y = y1
+            return x, y
+        if x1 == x2:
+            x = x1
+            y = yt
+        else:
             m = (y2 - y1) / (x2 - x1)
-        else:
-            m = 1e10
-        if y1 != y2:
-            rm = 1 / m
-        else:
-            rm = 1e10
-        x = (xt * rm - x1 * m + yt - y1) / (m + rm)
-        y = m * (x - x1) + y1
+            x = (xt / m + x1 * m + yt - y1) / (m + 1 / m)
+            y = m * (x - x1) + y1
         if y > y2:
             x = x2
             y = y2
@@ -116,12 +130,18 @@ class PhysicsScreen(Screen):
         super().__init__('Physics Screen')
         self.parent = parent
         self.colliders = (((100, 300), (200, 400), (100, 400)),)
-        self.grid_size = 2
+        self.grid_size = 1
         self.grid_length = 100
         self.soft_body = []
         for i in range(self.grid_size + 1):
             for j in range(self.grid_size + 1):
-                self.soft_body.append(PhysicsScreen.SoftBodyPoint(j * self.grid_length / self.grid_size + 110, i * self.grid_length / self.grid_size))
+                self.soft_body.append(
+                    PhysicsScreen.SoftBodyPoint(
+                        10 / (self.grid_size + 1) ** 2,
+                        j * self.grid_length / self.grid_size + 110,
+                        i * self.grid_length / self.grid_size
+                    )
+                )
         for i in range(self.grid_size + 1):
             for j in range(self.grid_size + 1):
                 neighbors = (
@@ -137,7 +157,9 @@ class PhysicsScreen(Screen):
                 for neighbor in neighbors:
                     neighbor_x, neighbor_y = neighbor
                     if 0 <= neighbor_x <= self.grid_size and 0 <= neighbor_y <= self.grid_size:
-                        self.soft_body[i * (self.grid_size + 1) + j].add_neighbor(self.soft_body[neighbor_x * (self.grid_size + 1) + neighbor_y])
+                        self.soft_body[i * (self.grid_size + 1) + j].add_neighbor(
+                            self.soft_body[neighbor_x * (self.grid_size + 1) + neighbor_y]
+                        )
 
     def init(self) -> None:
         self.addDrawableChild(
@@ -149,17 +171,27 @@ class PhysicsScreen(Screen):
 
     def render(self, surface: Surface, mouse_x: int, mouse_y: int) -> None:
         super().render(surface, mouse_x, mouse_y)
+        for polygon in self.colliders:
+            draw.polygon(surface, (0, 0, 0), polygon)
         for point in self.soft_body:
             for polygon in self.colliders:
                 if PhysicsScreen.point_in_polygon((point.x, point.y), polygon):
-                    # x, y = PhysicsScreen.closest_point_in_polygon((point.x, point.y), polygon)
-                    # point.x = x
-                    # point.y = y
-                    point.velocity_x = -0.8 * point.velocity_x
-                    point.velocity_y = -0.8 * point.velocity_y
-            point.tick()
-        for polygon in self.colliders:
-            draw.polygon(surface, (0, 0, 0), polygon)
+                    x, y = PhysicsScreen.closest_point_in_polygon((point.x, point.y), polygon)
+                    dx = x - point.x
+                    dy = y - point.y
+                    point.x = x
+                    point.y = y
+                    velocity = (point.velocity_x ** 2 + point.velocity_y ** 2) ** 0.5
+                    if dx == 0:
+                        point.velocity_y = -velocity
+                        continue
+                    theta = atan(dy / dx)
+                    point.velocity_x = velocity * cos(theta)
+                    point.velocity_y = velocity * sin(theta)
+
+            point.update_velocity()
+        for point in self.soft_body:
+            point.update_position()
         border_points = []
         for i in range(self.grid_size):
             point = self.soft_body[i]

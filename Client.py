@@ -7,6 +7,7 @@ from gui.screen.TitleScreen import TitleScreen
 class Client:
     pygame.init()
     textRenderer = pygame.font.SysFont(('微软雅黑', 'pingfang'), 24)
+    FPS = 60
 
     def __init__(self):
         info = pygame.display.Info()
@@ -17,7 +18,6 @@ class Client:
         self.window = pygame.display.set_mode((window_width, window_height))
         pygame.display.set_caption('STEM Visual Helper')
         self.clock = pygame.time.Clock()
-        self.currentFPS = 60
         self.running = True
         self.currentScreen = None
 
@@ -44,7 +44,7 @@ class Client:
                 elif event.type == pygame.TEXTINPUT:
                     self.currentScreen.charTyped(event.text)
                     pass
-            if frame == self.currentFPS // 20:
+            if frame == self.FPS // 20:
                 frame = 0
                 self.currentScreen.tick()
             else:
@@ -53,7 +53,7 @@ class Client:
             mouse_x, mouse_y = pygame.mouse.get_pos()
             self.currentScreen.render(self.window, mouse_x, mouse_y)
             pygame.display.flip()
-            self.clock.tick(self.currentFPS)
+            self.clock.tick(self.FPS)
 
     def scheduleStop(self) -> None:
         self.running = False
@@ -61,7 +61,6 @@ class Client:
 
 if __name__ == '__main__':
     import os
-
     os.environ['SDL_IME_SHOW_UI'] = '1'
     client = Client()
     client.run()
