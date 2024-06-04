@@ -1,8 +1,8 @@
 from pygame import Surface
-from pygame.font import SysFont
 from gui.AbtractParentElement import AbstractParentElement
 from gui.Element import Element
 from gui.Drawable import Drawable
+from gui.widget.TextFieldWidget import TextFieldWidget
 from abc import ABC
 from typing import List
 
@@ -56,4 +56,6 @@ class Screen(AbstractParentElement, Drawable, ABC):
         pass
 
     def tick(self) -> None:
-        pass
+        for drawable in self.drawables:
+            if isinstance(drawable, TextFieldWidget):
+                drawable.tick()
