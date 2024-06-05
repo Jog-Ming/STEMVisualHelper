@@ -3,12 +3,13 @@ from pygame import draw
 from gui.widget.ButtonWidget import ButtonWidget
 from gui.screen.Screen import Screen
 from typing import Tuple
-from math import atan, sin, cos
+from math import atan2, sin, cos, dist
 
 
 class PhysicsScreen(Screen):
-
     class SoftBodyPoint:
+        TPS = 6000
+
         def __init__(self, mass: float, x: float, y: float):
             self.mass = mass
             self.x = x
@@ -17,34 +18,35 @@ class PhysicsScreen(Screen):
             self.distances = []
             self.velocity_x = 0.0
             self.velocity_y = 0.0
-            from Client import Client
-            self.FPS = Client.FPS
 
         def add_neighbor(self, neighbor):
             self.neighbors.append(neighbor)
-            self.distances.append(((self.x - neighbor.x) ** 2 + (self.y - neighbor.y) ** 2) ** 0.5)
+            self.distances.append(dist((self.x, self.y), (neighbor.x, neighbor.y)))
 
         def update_velocity(self):
-            force_x = 0
-            force_y = 0
-            for i, neighbor in enumerate(self.neighbors):
-                dx = ((self.x - neighbor.x) ** 2 + (self.y - neighbor.y) ** 2) ** 0.5 - self.distances[i]
-                force = 1000 * dx
-                if self.x - neighbor.x > 0:
-                    force = -force
-                if self.x == neighbor.x:
-                    force_y += -force
-                    continue
-                theta = atan((self.y - neighbor.y) / (self.x - neighbor.x))
+            force_x = 0.0
+            force_y = 0.0
+            for i in range(len(self.neighbors)):
+                neighbor = self.neighbors[i]
+                dx = dist((self.x, self.y), (neighbor.x, neighbor.y)) - self.distances[i]
+                theta = atan2(neighbor.y - self.y, neighbor.x - self.x)
+                force = dx * 40.0
                 force_x += force * cos(theta)
                 force_y += force * sin(theta)
-            self.velocity_x += force_x / self.FPS / self.mass
-            self.velocity_y += force_y / self.FPS / self.mass
-            self.velocity_y += 20 / self.FPS
+            self.velocity_x += force_x / self.TPS / self.mass
+            self.velocity_y += force_y / self.TPS / self.mass
+            self.velocity_y += 50.0 / self.TPS
 
         def update_position(self):
-            self.x += self.velocity_x / self.FPS
-            self.y += self.velocity_y / self.FPS
+            self.x += self.velocity_x / self.TPS
+            self.y += self.velocity_y / self.TPS
+
+        def render(self, surface: Surface) -> None:
+            # draw.circle(surface, (0, 0, 0), (self.x, self.y), 2)
+            # for neighbor in self.neighbors:
+                # draw.line(surface, (64, 64, 64), (self.x, self.y), (neighbor.x, neighbor.y))
+            # draw.line(surface, (64, 64, 64), (self.x, self.y), (self.x + self.velocity_x / 10, self.y + self.velocity_y / 10), width=3)
+            pass
 
         def __repr__(self):
             return str((self.x, self.y))
@@ -129,17 +131,17 @@ class PhysicsScreen(Screen):
     def __init__(self, parent: Screen):
         super().__init__('Physics Screen')
         self.parent = parent
-        self.colliders = (((100, 300), (200, 400), (100, 400)),)
-        self.grid_size = 1
-        self.grid_length = 100
+        self.colliders = (((100, 300), (220, 420), (100, 420)),)
+        self.grid_size = 5
+        self.grid_pixels = 100
         self.soft_body = []
         for i in range(self.grid_size + 1):
             for j in range(self.grid_size + 1):
                 self.soft_body.append(
                     PhysicsScreen.SoftBodyPoint(
-                        10 / (self.grid_size + 1) ** 2,
-                        j * self.grid_length / self.grid_size + 110,
-                        i * self.grid_length / self.grid_size
+                        1.0 / (self.grid_size + 1) ** 2,
+                        j * self.grid_pixels / self.grid_size + 110,
+                        i * self.grid_pixels / self.grid_size + 0,
                     )
                 )
         for i in range(self.grid_size + 1):
@@ -173,25 +175,22 @@ class PhysicsScreen(Screen):
         super().render(surface, mouse_x, mouse_y)
         for polygon in self.colliders:
             draw.polygon(surface, (0, 0, 0), polygon)
-        for point in self.soft_body:
-            for polygon in self.colliders:
-                if PhysicsScreen.point_in_polygon((point.x, point.y), polygon):
-                    x, y = PhysicsScreen.closest_point_in_polygon((point.x, point.y), polygon)
-                    dx = x - point.x
-                    dy = y - point.y
-                    point.x = x
-                    point.y = y
-                    velocity = (point.velocity_x ** 2 + point.velocity_y ** 2) ** 0.5
-                    if dx == 0:
-                        point.velocity_y = -velocity
-                        continue
-                    theta = atan(dy / dx)
-                    point.velocity_x = velocity * cos(theta)
-                    point.velocity_y = velocity * sin(theta)
-
-            point.update_velocity()
-        for point in self.soft_body:
-            point.update_position()
+        for _ in range(PhysicsScreen.SoftBodyPoint.TPS // 60):
+            for point in self.soft_body:
+                for polygon in self.colliders:
+                    if PhysicsScreen.point_in_polygon((point.x, point.y), polygon):
+                        x, y = PhysicsScreen.closest_point_in_polygon((point.x, point.y), polygon)
+                        dx = x - point.x
+                        dy = y - point.y
+                        point.x = x
+                        point.y = y
+                        velocity = (point.velocity_x ** 2 + point.velocity_y ** 2) ** 0.5
+                        theta = atan2(dy, dx)
+                        point.velocity_x = velocity * cos(theta)
+                        point.velocity_y = velocity * sin(theta)
+                point.update_velocity()
+            for point in self.soft_body:
+                point.update_position()
         border_points = []
         for i in range(self.grid_size):
             point = self.soft_body[i]
@@ -207,4 +206,4 @@ class PhysicsScreen(Screen):
             border_points.append((point.x, point.y))
         draw.polygon(surface, (255, 0, 0), border_points)
         for point in self.soft_body:
-            draw.circle(surface, (0, 0, 0), (point.x, point.y), 2)
+            point.render(surface)
