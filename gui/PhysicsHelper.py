@@ -96,10 +96,7 @@ class PhysicsHelper(ABC):
                 if p1.x == p2.x:
                     result = not result
                     continue
-                if edge.slope > 0:
-                    result ^= edge.slope * (p.x - p1.x) >= (p.y - p1.y)
-                else:
-                    result ^= edge.slope * (p.x - p1.x) <= (p.y - p1.y)
+                result ^= edge.slope * (p.x - p1.x) >= (p.y - p1.y)
             return result
 
         def closestPoint(self, point: 'PhysicsHelper.Point') -> 'PhysicsHelper.Point':
@@ -112,3 +109,9 @@ class PhysicsHelper(ABC):
                     minimum_distance = distance
                     result = p
             return result
+
+        def __str__(self):
+            return f"Polygon({', '.join(map(str, self.points))})"
+
+        def __repr__(self):
+            return str(self)

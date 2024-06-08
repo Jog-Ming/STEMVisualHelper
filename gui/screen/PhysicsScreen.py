@@ -51,10 +51,15 @@ class PhysicsScreen(Screen, PhysicsHelper):
         self.parent = parent
         self.colliders = (
             PhysicsHelper.Polygon(
-                PhysicsHelper.Point(100, 300),
-                PhysicsHelper.Point(220, 420),
-                PhysicsHelper.Point(100, 420),
+                PhysicsHelper.Point(100, 200),
+                PhysicsHelper.Point(220, 320),
+                PhysicsHelper.Point(100, 320),
             ),
+            PhysicsHelper.Polygon(
+                PhysicsHelper.Point(500, 300),
+                PhysicsHelper.Point(380, 420),
+                PhysicsHelper.Point(500, 420),
+            )
         )
         self.grid_size = 5
         self.grid_pixels = 100
@@ -102,6 +107,7 @@ class PhysicsScreen(Screen, PhysicsHelper):
             for point in self.soft_body:
                 for polygon in self.colliders:
                     if point in polygon:
+                        print(polygon)
                         x, y = polygon.closestPoint(point)
                         dx = x - point.x
                         dy = y - point.y
