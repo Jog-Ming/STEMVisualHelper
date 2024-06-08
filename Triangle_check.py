@@ -175,10 +175,45 @@ def tri_solve(sides: dict, angles: dict) -> list:
 
             # s1, s2, a1
 
+            delta = s1 ** 2 - sin(radians(a1)) ** 2 * s2 ** 2
+
+            # decide if c does not exist
+            # print(delta)
+            if delta < 0:
+                return [-1]
+            c_1 = s2 * cos(radians(a1)) + sqrt(delta)
+            c_2 = s2 * cos(radians(a1)) - sqrt(delta)
+            # print(c_1, c_2)
+            if c_1 < 0 + ZERO:
+                return [-1]
+            elif c_2 < 0 + ZERO or abs(c_1 - c_2) < ZERO:
+                sin_a2 = s2 * sin(radians(a1)) / s1
+                a2 = degrees(asin(sin_a2))
+                a3 = 180 - a1 - a2
+                s3 = s1 * sin(radians(a3)) / sin(radians(a1))
+                return [s1, s2, s3, a1, a2, a3]
+            else:
+                sin_a2 = s2 * sin(radians(a1)) / s1
+                a2 = degrees(asin(sin_a2))
+                a3 = 180 - a1 - a2
+                s3 = s1 * sin(radians(a3)) / sin(radians(a1))
+
+                alter_a2 = 180 - a2
+                alter_a3 = 180 - a1 - alter_a2
+                alter_s3 = s1 * sin(radians(alter_a3)) / sin(radians(a1))
+
+                return [[s1, s2, s3, a1, a2, a3], [s1, s2, alter_s3, a1, alter_a2, alter_a3]]
+
+
+
+            '''
             delta = s2 * sin(radians(a1)) / s1
 
-            if (a1 == 90 and s1 == s2):
+            if a1 == 90 and s1 == s2:
                 return [-1]
+            if (s2 > s1 and a1 > 90):
+                return [-1]
+
             if abs(delta - 1) < ZERO or delta < 1 and (s1 > s2 or s1 == s2 and a1 < 90):
 
                 a2 = degrees(asin(delta))
@@ -191,15 +226,10 @@ def tri_solve(sides: dict, angles: dict) -> list:
                 
                 # print(f"{s3n} = {round(s3,4):.3f}, ∠{a2n} = {round(a2,4):.3f}°, ∠{a3n} = {round(a3,4):.3f}°")
 
-                
+            
             elif delta < 1:
 
-                if s1 == s2:
-
-                    return[-1]
-                else:
-
-                
+                if s1 != s2:
                     sin_a2 = s2 * sin(radians(a1)) / s1
 
                     a2 = degrees(asin(sin_a2))
@@ -217,10 +247,12 @@ def tri_solve(sides: dict, angles: dict) -> list:
                     alter_s3 = s1 * sin(radians(alter_a3)) / sin(radians(a1))
 
                     return [[s1, s2, s3, a1, a2, a3], [s1, s2, alter_s3, a1, alter_a2, alter_a3]]
+                else:
+                    return [-1]
             else:
 
                 return[-1]
-            
+            '''
         else:
 
             s1n = tuple(set(side_names) - set(sides))[0]

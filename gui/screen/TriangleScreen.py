@@ -152,7 +152,7 @@ class TriangleScreen(Screen):
             draw_triangle(self.v, ori, p, surface)
             print_type(self.v, ori, surface, self.textRenderer)
             print_area(self.v, ori, surface, self.textRenderer)
-        if self.is_tri == float("inf"):  # if there is only 1 possible triangle or inf triangles
+        if self.is_tri == float("inf"):
             self.v = sort_triangle(self.v)
 
             ori = (300, 250)
