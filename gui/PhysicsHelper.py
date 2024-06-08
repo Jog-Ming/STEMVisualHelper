@@ -112,9 +112,3 @@ class PhysicsHelper(ABC):
                     minimum_distance = distance
                     result = p
             return result
-
-
-if __name__ == '__main__':
-    a = PhysicsHelper.Line(PhysicsHelper.Point(0, 1), PhysicsHelper.Point(1, 2))
-    b, c = a
-    print(b, c)
