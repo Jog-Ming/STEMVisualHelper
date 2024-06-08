@@ -2,18 +2,17 @@ from pygame import Surface
 from pygame import draw
 from gui.widget.ButtonWidget import ButtonWidget
 from gui.screen.Screen import Screen
-from typing import Tuple
+from gui.PhysicsHelper import PhysicsHelper
 from math import atan2, sin, cos, dist
 
 
-class PhysicsScreen(Screen):
-    class SoftBodyPoint:
-        TPS = 6000
+class PhysicsScreen(Screen, PhysicsHelper):
+    class SoftBodyPoint(PhysicsHelper.Point):
+        TPS = 600
 
         def __init__(self, mass: float, x: float, y: float):
+            super().__init__(x, y)
             self.mass = mass
-            self.x = x
-            self.y = y
             self.neighbors = []
             self.distances = []
             self.velocity_x = 0.0
@@ -42,96 +41,21 @@ class PhysicsScreen(Screen):
             self.y += self.velocity_y / self.TPS
 
         def render(self, surface: Surface) -> None:
-            # draw.circle(surface, (0, 0, 0), (self.x, self.y), 2)
-            # for neighbor in self.neighbors:
-                # draw.line(surface, (64, 64, 64), (self.x, self.y), (neighbor.x, neighbor.y))
-            # draw.line(surface, (64, 64, 64), (self.x, self.y), (self.x + self.velocity_x / 10, self.y + self.velocity_y / 10), width=3)
             pass
 
         def __repr__(self):
             return str((self.x, self.y))
 
-    @staticmethod
-    def point_in_polygon(point: Tuple[float, float], polygon: Tuple[Tuple[int, int], ...]) -> bool:
-        x, y = point
-        edges = []
-        for i in range(len(polygon) - 1):
-            edges.append((polygon[i], polygon[i + 1]))
-        edges.append((polygon[-1], polygon[0]))
-        intersections = 0
-        for edge in edges:
-            point_1, point_2 = edge
-            x1, y1 = point_1
-            x2, y2 = point_2
-            if y2 < y1:
-                x1, x2 = x2, x1
-                y1, y2 = y2, y1
-            if not y1 <= y <= y2:
-                continue
-            if x1 == x2:
-                intersections += x >= x1
-            else:
-                slope = (y2 - y1) / (x2 - x1)
-                if slope > 0:
-                    intersections += slope * (x - x1) >= (y - y1)
-                else:
-                    intersections += slope * (x - x1) <= (y - y1)
-        return intersections % 2 == 1
-
-    @staticmethod
-    def closest_point_on_line(
-            point: Tuple[float, float],
-            line: Tuple[Tuple[int, int], Tuple[int, int]]
-    ) -> Tuple[float, float]:
-        point_1, point_2 = line
-        x1, y1 = point_1
-        x2, y2 = point_2
-        xt, yt = point
-        if y2 < y1:
-            x1, x2 = x2, x1
-            y1, y2 = y2, y1
-        elif y1 == y2:
-            if x2 > x1:
-                x = min(max(xt, x1), x2)
-            else:
-                x = min(max(xt, x2), x1)
-            y = y1
-            return x, y
-        if x1 == x2:
-            x = x1
-            y = yt
-        else:
-            m = (y2 - y1) / (x2 - x1)
-            x = (xt / m + x1 * m + yt - y1) / (m + 1 / m)
-            y = m * (x - x1) + y1
-        if y > y2:
-            x = x2
-            y = y2
-        elif y < y1:
-            x = x1
-            y = y1
-        return x, y
-
-    @staticmethod
-    def closest_point_in_polygon(point, polygon) -> Tuple[float, float]:
-        edges = []
-        for i in range(len(polygon) - 1):
-            edges.append((polygon[i], polygon[i + 1]))
-        edges.append((polygon[-1], polygon[0]))
-        min_distance = 1e10
-        min_point = None
-        for edge in edges:
-            p = PhysicsScreen.closest_point_on_line(point, edge)
-            distance = ((point[0] - p[0]) ** 2 + (point[1] - p[1]) ** 2) ** 0.5
-            if distance < min_distance:
-                min_distance = distance
-                min_point = p
-        return min_point
-
     def __init__(self, parent: Screen):
         super().__init__('Physics Screen')
         self.parent = parent
-        self.colliders = (((100, 300), (220, 420), (100, 420)),)
+        self.colliders = (
+            PhysicsHelper.Polygon(
+                PhysicsHelper.Point(100, 300),
+                PhysicsHelper.Point(220, 420),
+                PhysicsHelper.Point(100, 420),
+            ),
+        )
         self.grid_size = 5
         self.grid_pixels = 100
         self.soft_body = []
@@ -174,12 +98,12 @@ class PhysicsScreen(Screen):
     def render(self, surface: Surface, mouse_x: int, mouse_y: int) -> None:
         super().render(surface, mouse_x, mouse_y)
         for polygon in self.colliders:
-            draw.polygon(surface, (0, 0, 0), polygon)
+            polygon.render(surface, (0, 0, 0))
         for _ in range(PhysicsScreen.SoftBodyPoint.TPS // 60):
             for point in self.soft_body:
                 for polygon in self.colliders:
-                    if PhysicsScreen.point_in_polygon((point.x, point.y), polygon):
-                        x, y = PhysicsScreen.closest_point_in_polygon((point.x, point.y), polygon)
+                    if point in polygon:
+                        x, y = polygon.closest_point(point)
                         dx = x - point.x
                         dy = y - point.y
                         point.x = x
