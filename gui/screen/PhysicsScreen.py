@@ -18,11 +18,11 @@ class PhysicsScreen(Screen, PhysicsHelper):
             self.velocity_x = 0.0
             self.velocity_y = 0.0
 
-        def add_neighbor(self, neighbor):
+        def addNeighbor(self, neighbor):
             self.neighbors.append(neighbor)
             self.distances.append(dist((self.x, self.y), (neighbor.x, neighbor.y)))
 
-        def update_velocity(self):
+        def updateVelocity(self):
             force_x = 0.0
             force_y = 0.0
             for i in range(len(self.neighbors)):
@@ -36,7 +36,7 @@ class PhysicsScreen(Screen, PhysicsHelper):
             self.velocity_y += force_y / self.TPS / self.mass
             self.velocity_y += 50.0 / self.TPS
 
-        def update_position(self):
+        def updatePosition(self):
             self.x += self.velocity_x / self.TPS
             self.y += self.velocity_y / self.TPS
 
@@ -83,9 +83,8 @@ class PhysicsScreen(Screen, PhysicsHelper):
                 for neighbor in neighbors:
                     neighbor_x, neighbor_y = neighbor
                     if 0 <= neighbor_x <= self.grid_size and 0 <= neighbor_y <= self.grid_size:
-                        self.soft_body[i * (self.grid_size + 1) + j].add_neighbor(
-                            self.soft_body[neighbor_x * (self.grid_size + 1) + neighbor_y]
-                        )
+                        self.soft_body[i * (self.grid_size + 1) + j].addNeighbor(
+                            self.soft_body[neighbor_x * (self.grid_size + 1) + neighbor_y])
 
     def init(self) -> None:
         self.addDrawableChild(
@@ -103,7 +102,7 @@ class PhysicsScreen(Screen, PhysicsHelper):
             for point in self.soft_body:
                 for polygon in self.colliders:
                     if point in polygon:
-                        x, y = polygon.closest_point(point)
+                        x, y = polygon.closestPoint(point)
                         dx = x - point.x
                         dy = y - point.y
                         point.x = x
@@ -112,9 +111,9 @@ class PhysicsScreen(Screen, PhysicsHelper):
                         theta = atan2(dy, dx)
                         point.velocity_x = velocity * cos(theta)
                         point.velocity_y = velocity * sin(theta)
-                point.update_velocity()
+                point.updateVelocity()
             for point in self.soft_body:
-                point.update_position()
+                point.updatePosition()
         border_points = []
         for i in range(self.grid_size):
             point = self.soft_body[i]

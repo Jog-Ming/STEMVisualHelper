@@ -1,15 +1,13 @@
 from pygame import Surface
-
 from gui.screen.Screen import Screen
-
 from math import sin, cos, radians
 from gui.widget.FloatFieldWidget import FloatFieldWidget
 from gui.widget.ButtonWidget import ButtonWidget
 from gui.DrawableHelper import DrawableHelper
-from Triangle_check import tri_type, area, tri_n
+from TriangleCheck import triType, area, triN
 
 
-def draw_triangle(v, ori, p, window):
+def drawTriangle(v, ori, p, window):
     # draw the triangle with 6 datas, point B (or C??) position, and the length of a
     DrawableHelper.drawHorizontalLine(window, ori[0], ori[0] + p, ori[1], (0, 0, 0))
     DrawableHelper.drawLine(
@@ -32,7 +30,7 @@ def draw_triangle(v, ori, p, window):
     )
 
 
-def sort_triangle(v):
+def sortTriangle(v):
     # make sure that the v[0] is the longest side
     v_s = v[:3]
     v_a = v[3:]
@@ -42,15 +40,14 @@ def sort_triangle(v):
     return v
 
 
-def print_area(v, ori, window, textRenderer):
-    DrawableHelper.drawText(window, textRenderer, text=f"Area: {round(area(v[0], v[1], v[2]), 3)}", x=ori[0] + 40,
+def printArea(v, ori, window, text_renderer):
+    DrawableHelper.drawText(window, text_renderer, text=f"Area: {round(area(v[0], v[1], v[2]), 3)}", x=ori[0] + 40,
                             y=ori[1] + 60, color=(0, 0, 0))
 
 
-def print_type(v, ori, window, textRenderer):
-    DrawableHelper.drawText(window, textRenderer, text= tri_type(v), x=ori[0],
+def printType(v, ori, window, text_renderer):
+    DrawableHelper.drawText(window, text_renderer, text=triType(v), x=ori[0],
                             y=ori[1] + 30, color=(0, 0, 0))
-
 
 
 class TriangleScreen(Screen):
@@ -63,7 +60,7 @@ class TriangleScreen(Screen):
 
         # the following list consists of 6 data: 3 sides and 3 angles
         # v[i] and v[i + 3] are corresponding sides and angles
-        self.v = [0, 0, 0, 0, 0, 0]  # the list of the data given, AND the final list of the final 6 values of a triangle
+        self.v = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         self.v1 = [0, 0, 0, 0, 0, 0]  # the list of the final 6 values of the two triangles
         self.v2 = [0, 0, 0, 0, 0, 0]
         self.names = ['a', 'b', 'c', 'A', 'B', 'C']  # the names of the side and angle
@@ -87,30 +84,30 @@ class TriangleScreen(Screen):
                                 color=(0, 0, 0))
         # draw the number of data inputted and triangles possible
         if self.is_tri:
-            DrawableHelper.drawText(surface, self.textRenderer, text=f"There are {self.non_ZERO} datas inputted", x=200, y=370,
+            DrawableHelper.drawText(surface, self.textRenderer, text=f"There are {self.non_ZERO} datas inputted", x=200,
+                                    y=370,
                                     color=(0, 0, 0))
         else:
             DrawableHelper.drawText(surface, self.textRenderer, text=f"There are {self.non_ZERO} datas inputted", x=200,
                                     y=370,
                                     color=(255, 0, 0))
-
         if self.is_tri:
-            DrawableHelper.drawText(surface, self.textRenderer, text=f"There is {self.is_tri} triangles formed", x=200, y=410,
-                                color=(0, 0, 0))
-
+            DrawableHelper.drawText(surface, self.textRenderer, text=f"There is {self.is_tri} triangles formed", x=200,
+                                    y=410,
+                                    color=(0, 0, 0))
         else:
             DrawableHelper.drawText(surface, self.textRenderer, text=f"There is {self.is_tri} triangles formed", x=200,
                                     y=410,
                                     color=(255, 0, 0))
-
         for i in range(6):
-            DrawableHelper.drawText(surface, self.textRenderer, f'{self.names[i]}: ', x=20, y=50 + 40 * i, color=(0, 0, 0))
-
+            DrawableHelper.drawText(surface, self.textRenderer, f'{self.names[i]}: ', x=20, y=50 + 40 * i,
+                                    color=(0, 0, 0))
         # receive data for sides and angles AND find how data points are given
         self.non_ZERO = 0
-
         for i in range(6):
+            # noinspection PyUnresolvedReferences
             if self.children()[i].text:
+                # noinspection PyUnresolvedReferences
                 self.v[i] = float(self.children()[i].text)
                 self.non_ZERO += 1
             else:
@@ -126,7 +123,7 @@ class TriangleScreen(Screen):
                 angles[self.names[i]] = self.v[i]
 
         if self.non_ZERO >= 3:  # if there is only 3 data, solve the triangle.
-            values = tri_n(sides, angles, self.non_ZERO)
+            values = triN(sides, angles, self.non_ZERO)
 
             if values[0] == -1:  # There is no triangle
                 self.is_tri = 0
@@ -145,33 +142,32 @@ class TriangleScreen(Screen):
 
         p = 200
         if self.is_tri == 1:  # if there is only 1 possible triangle or inf triangles
-            self.v = sort_triangle(self.v)
+            self.v = sortTriangle(self.v)
 
             ori = (300, 250)
 
-            draw_triangle(self.v, ori, p, surface)
-            print_type(self.v, ori, surface, self.textRenderer)
-            print_area(self.v, ori, surface, self.textRenderer)
+            drawTriangle(self.v, ori, p, surface)
+            printType(self.v, ori, surface, self.textRenderer)
+            printArea(self.v, ori, surface, self.textRenderer)
         if self.is_tri == float("inf"):
-            self.v = sort_triangle(self.v)
+            self.v = sortTriangle(self.v)
 
             ori = (300, 250)
 
-            draw_triangle(self.v, ori, p, surface)
-            print_type(self.v, ori, surface, self.textRenderer)
+            drawTriangle(self.v, ori, p, surface)
+            printType(self.v, ori, surface, self.textRenderer)
         elif self.is_tri == 2:  # if there is 2 possible triangles
-            self.v1 = sort_triangle(self.v1)
-            self.v2 = sort_triangle(self.v2)
+            self.v1 = sortTriangle(self.v1)
+            self.v2 = sortTriangle(self.v2)
 
             ori1 = (170, 250)
             ori2 = (470, 250)
 
-            draw_triangle(self.v1, ori1, p, surface)
-            print_type(self.v1, ori1, surface, self.textRenderer)
-            print_area(self.v1, ori1, surface, self.textRenderer)
-            draw_triangle(self.v2, ori2, p, surface)
-            print_type(self.v2, ori2, surface, self.textRenderer)
-            print_area(self.v2, ori2, surface, self.textRenderer)
+            drawTriangle(self.v1, ori1, p, surface)
+            printType(self.v1, ori1, surface, self.textRenderer)
+            printArea(self.v1, ori1, surface, self.textRenderer)
+            drawTriangle(self.v2, ori2, p, surface)
+            printType(self.v2, ori2, surface, self.textRenderer)
+            printArea(self.v2, ori2, surface, self.textRenderer)
         else:  # If there is no triangle
             pass
-

@@ -45,7 +45,7 @@ class PhysicsHelper(ABC):
                 return float('inf')
             return (self.point_2.y - self.point_1.y) / (self.point_2.x - self.point_1.x)
 
-        def closest_point(self, p: 'PhysicsHelper.Point') -> 'PhysicsHelper.Point':
+        def closestPoint(self, p: 'PhysicsHelper.Point') -> 'PhysicsHelper.Point':
             p1, p2 = self
             if p2.y < p1.y:
                 p1, p2 = p2, p1
@@ -102,11 +102,11 @@ class PhysicsHelper(ABC):
                     result ^= edge.slope * (p.x - p1.x) <= (p.y - p1.y)
             return result
 
-        def closest_point(self, point: 'PhysicsHelper.Point') -> 'PhysicsHelper.Point':
+        def closestPoint(self, point: 'PhysicsHelper.Point') -> 'PhysicsHelper.Point':
             minimum_distance = float('inf')
             result = None
             for edge in self.edges:
-                p = edge.closest_point(point)
+                p = edge.closestPoint(point)
                 distance = PhysicsHelper.Line(point, p).length
                 if distance < minimum_distance:
                     minimum_distance = distance
