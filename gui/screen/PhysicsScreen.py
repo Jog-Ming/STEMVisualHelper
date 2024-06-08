@@ -133,6 +133,6 @@ class PhysicsScreen(Screen, PhysicsHelper):
         for i in range(self.grid_size):
             point = self.soft_body[(self.grid_size + 1) * self.grid_size - i * (self.grid_size + 1)]
             border_points.append((point.x, point.y))
-        draw.polygon(surface, (255, 0, 0), border_points)
+        draw.polygon(surface, (255, 128, 128), border_points)
         for point in self.soft_body:
             point.render(surface)
