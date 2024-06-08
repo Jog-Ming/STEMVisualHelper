@@ -107,7 +107,6 @@ class PhysicsScreen(Screen, PhysicsHelper):
             for point in self.soft_body:
                 for polygon in self.colliders:
                     if point in polygon:
-                        print(polygon)
                         x, y = polygon.closestPoint(point)
                         dx = x - point.x
                         dy = y - point.y
